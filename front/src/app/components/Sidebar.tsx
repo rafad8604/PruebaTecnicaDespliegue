@@ -54,24 +54,8 @@ const Sidebar: React.FC = () => (
       >
         Perfil
       </div>
-      <button style={buttonStyle}>Cerrar Sesión</button>
-      <div style={{ marginTop: 30 }}>
-        <div
-        style={{
-          background: 'linear-gradient(90deg, #ffb347 0%, #ff7f50 100%)',
-          color: '#fff',
-          borderRadius: 18,
-          padding: '10px',
-          fontSize: 22,
-          fontWeight: 400,
-          margin: '16px 0 24px 0px', // margen izquierdo para igualar ambos lados
-          boxShadow: '2px 4px 8px #0001',
-          width: 'calc(100% - 32px)', // resta el margen izquierdo y derecho
-          textAlign: 'center',
-        }}
-      >
-        Gestro de recaudo
-      </div>
+      <div style={{ marginBottom: 16 }}>      
+      
         <button style={buttonStyle}>Identificación de usuarios</button>
       </div>
     </nav>
