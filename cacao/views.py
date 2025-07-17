@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import PERSONAS
-from .serializer import PERSONASSerializer
+from .serializer import PERSONASSerializer, PaisesSerializer, DepartamentosSerializer, MunicipiosSerializer, TiposDocumentosSerializer
 from django.http import Http404
 
 # Create your views here.
@@ -59,3 +59,28 @@ class PERSONASView(APIView):
             raise Http404
         persona.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class paisesView(APIView):
+    def get(self, request):
+        paises = paises.objects.all()
+        serializer = PaisesSerializer(paises, many=True)
+        return Response(serializer.data)
+    
+class departamentosView(APIView):
+    def get(self, request):
+        departamentos = departamentos.objects.all()
+        serializer = DepartamentosSerializer(departamentos, many=True)
+        return Response(serializer.data)
+
+class municipiosView(APIView):
+    def get(self, request):
+        municipios = municipios.objects.all()
+        serializer = MunicipiosSerializer(municipios, many=True)
+        return Response(serializer.data)
+
+class tiposDocumentosView(APIView):
+    def get(self, request):
+        tipos_documentos = tipos_documentos.objects.all()
+        serializer = TiposDocumentosSerializer(tipos_documentos, many=True)
+        return Response(serializer.data)
+
