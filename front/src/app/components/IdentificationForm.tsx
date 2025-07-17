@@ -5,6 +5,8 @@ import Button from './Button';
 import InputSelect from './InputSelect';
 import { getAllPersonas } from '../adapters/back.api';
 
+
+//Crearlos en los models
 const tipoPersonaOptions = [
   { value: 'NATURAL', label: 'Natural' },
   { value: 'JURIDICA', label: 'Jurídica' },
@@ -44,7 +46,8 @@ const IdentificationForm = () => {
     // Solo busca por número de documento
     const resAllPersonas = await getAllPersonas(numeroDocumento);
     setObtenerPersona(resAllPersonas.data);
-    console.log(resAllPersonas.numeroDocumento);
+
+    console.log(resAllPersonas.numeroDocumento); //crearlo en un hook
   };
 
   const isReady = tipoPersona && tipoDocumento;
