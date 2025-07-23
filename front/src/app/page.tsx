@@ -1,15 +1,12 @@
-import Layout from './components/Layout';
-import IdentificationForm from './components/IdentificationForm';
-import InfoForm from './components/InfoForm';
+
+import Layout from './module_info_user/components/Layout';
+import UserFound from './module_info_user/components/UserFound';
 
 export default function Home() {
   return (
     <Layout>
       <div style={{ padding: 32 }}>
-        <IdentificationForm />
-        <div style={{ marginTop: 32 }}>
-          <InfoForm />
-        </div>
+        <UserFound />
       </div>
     </Layout>
   );

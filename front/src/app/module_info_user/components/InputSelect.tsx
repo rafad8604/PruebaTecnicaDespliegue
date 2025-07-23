@@ -19,7 +19,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
   onChange,
   ...props
 }) => (
-  <div style={{ marginBottom: '1rem' }}>
+  <div>
     {label && <label style={{ display: 'block', marginBottom: 4 }}>{label}</label>}
     <select value={value} onChange={onChange} {...props}>
       <option value="">Seleccione...</option>
