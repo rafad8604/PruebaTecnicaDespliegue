@@ -1,30 +1,25 @@
 "use client";
 import React, { useState } from 'react';
-import Input from './Input';
+import Input from './InputNormal';
 import Button from './Button';
 import InputSelect from './InputSelect';
-import { getAllPersonas } from '../adapters/back.api';
+import { useIdentificationForm } from '../hooks/useIdentificationForm';
+import { tipoPersonaOptions } from '../models/tipoPersonaOptions';
+import { tipoDocumentoOptions } from '../models/tipoDocumentoOptions';
 
 
-//Crearlos en los models
-const tipoPersonaOptions = [
-  { value: 'NATURAL', label: 'Natural' },
-  { value: 'JURIDICA', label: 'Jurídica' },
-];
+interface IdentificationFormProps {
+  onFound: (persona: any) => void;
+}
 
-const tipoDocumentoOptions = [
-  { value: 'CC', label: 'Cédula de Ciudadanía' },
-  { value: 'NIT', label: 'NIT' },
-];
-
-const IdentificationForm = () => {
+const IdentificationForm: React.FC<IdentificationFormProps> = ({ onFound }) => {
   const [tipoPersona, setTipoPersona] = useState('');
   const [tipoDocumento, setTipoDocumento] = useState('');
   const [numeroDocumento, setNumeroDocumento] = useState('');
-  const [obtenerPersona, setObtenerPersona] = useState<any>(null);
   const [error, setError] = useState('');
+  const { fetchData } = useIdentificationForm();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     if (!tipoPersona || !tipoDocumento) {
@@ -43,11 +38,12 @@ const IdentificationForm = () => {
       setError('Debes ingresar el número de documento.');
       return;
     }
-    // Solo busca por número de documento
-    const resAllPersonas = await getAllPersonas(numeroDocumento);
-    setObtenerPersona(resAllPersonas.data);
-
-    console.log(resAllPersonas.numeroDocumento); //crearlo en un hook
+    const data = await fetchData(numeroDocumento);
+    console.log(data);
+    // fetchData podría no retornar nada, así que solo llama onFound si data no es undefined/null
+    if (data !== undefined && data !== null) {
+      onFound(data);
+    }
   };
 
   const isReady = tipoPersona && tipoDocumento;
@@ -55,13 +51,11 @@ const IdentificationForm = () => {
   return (
     <form onSubmit={handleSubmit}>
       <InputSelect
-        label="Tipo de persona"
         value={tipoPersona}
         onChange={e => setTipoPersona(e.target.value)}
         options={tipoPersonaOptions}
       />
       <InputSelect
-        label="Tipo de documento"
         value={tipoDocumento}
         onChange={e => setTipoDocumento(e.target.value)}
         options={tipoDocumentoOptions}
