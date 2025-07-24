@@ -4,7 +4,7 @@ import Sidebar from './Sidebar';
 import Header from './Header';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="dashboard-layout" style={{ display: 'flex', minHeight: '100vh' }}>
+  <div className="dashboard-layout" style={{ display: 'flex', minHeight: '100vh', marginLeft: '10px' }}>
     <div>
       <Sidebar />
     </div>

@@ -20,9 +20,8 @@ const InputSelect: React.FC<InputSelectProps> = ({
   ...props
 }) => (
   <div>
-    {label && <label style={{ display: 'block', marginBottom: 4 }}>{label}</label>}
-    <select value={value} onChange={onChange} {...props}>
-      <option value="">Seleccione...</option>
+    {label && <label>{label}</label>}
+    <select className="font-serif font-light border border-gray-300 w-full h-10 mt-2 px-3 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent" value={value} onChange={onChange} {...props}>
       {options.map(opt => (
         <option key={opt.value} value={opt.value}>
           {opt.label}

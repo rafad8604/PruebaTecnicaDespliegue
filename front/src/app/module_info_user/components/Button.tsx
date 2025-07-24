@@ -8,7 +8,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 const Button: React.FC<ButtonProps> = ({ text, className = "", ...props }) => {
   return (
     <button 
-      className={`px-4 py-2 rounded-md font-medium transition-colors ${className}`}
+      className={`bg-orange-400 text-white font-serif font-light ${className}`}
       {...props}
     >
       {text}
