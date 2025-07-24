@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
-import Input from './InputNormal';
+import Title from './Title';
+import InputNormal from './InputNormal';
 import Button from './Button';
 import InputSelect from './InputSelect';
 import { useIdentificationForm } from '../hooks/useIdentificationForm';
@@ -49,26 +50,38 @@ const IdentificationForm: React.FC<IdentificationFormProps> = ({ onFound }) => {
   const isReady = tipoPersona && tipoDocumento;
 
   return (
-    <form onSubmit={handleSubmit}>
-      <InputSelect
-        value={tipoPersona}
-        onChange={e => setTipoPersona(e.target.value)}
-        options={tipoPersonaOptions}
-      />
-      <InputSelect
-        value={tipoDocumento}
-        onChange={e => setTipoDocumento(e.target.value)}
-        options={tipoDocumentoOptions}
-      />
-      <Input
-        placeholder="Número de documento"
-        value={numeroDocumento}
-        onChange={e => setNumeroDocumento(e.target.value)}
-        disabled={!isReady}
-      />
-      <Button text="Buscar" type="submit" disabled={!isReady || !numeroDocumento} />
-      {error && <div style={{ color: 'red' }}>{error}</div>}
-    </form>
+    <div className="ml-20 mt-10 mr-15">
+      <Title title="Identificación de usuarios recaudadores" />
+      <div >
+        <form onSubmit={handleSubmit} className="grid grid-cols-3 gap-3 mt-1">
+          <InputSelect
+            value={tipoPersona}
+            onChange={e => setTipoPersona(e.target.value)}
+            options={tipoPersonaOptions}
+          />
+          <InputSelect
+            value={tipoDocumento}
+            onChange={e => setTipoDocumento(e.target.value)}
+            options={tipoDocumentoOptions}
+          />
+          <InputNormal
+            placeholder="Número de documento"
+            value={numeroDocumento}
+            onChange={e => setNumeroDocumento(e.target.value)}
+            disabled={!isReady}
+          />
+          <div className="col-span-3 flex justify-end">
+            <Button 
+              text="Buscar" 
+              type="submit" 
+              disabled={!isReady || !numeroDocumento}
+              className="rounded-full px-20 py-2 text-lg hover:bg-orange-500 transition-colors shadow-lg"
+            />
+          </div>
+          {error && <div className="col-span-3 text-red-500 mt-2 text-right">{error}</div>}
+        </form>
+      </div>
+    </div>
   );
 };
 

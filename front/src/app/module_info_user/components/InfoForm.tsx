@@ -59,9 +59,9 @@ const InfoForm: React.FC<InfoFormProps> = ({ persona }) => {
   }, [persona]);
 
   return (
-    <form action="submit">
-      <div>
-      <Title title = "Información de usuarios recaudadores" />
+    <div className="ml-20 mt-10 mr-15">
+      <Title title = "Información de usuarios recaudadores" className="text-start" />
+    <form action="submit" className="grid grid-cols-3 gap-3 mt-1">
       <InputSelect
         value={form.nombre_pais}
         onChange={e => setForm({ ...form, nombre_pais: e.target.value })}
@@ -108,19 +108,19 @@ const InfoForm: React.FC<InfoFormProps> = ({ persona }) => {
         onChange={e => setForm({ ...form, correo_electronico: e.target.value })}
       />
       <InputNormal
-        value={form.correo_electronico}
+        value={form.confirmar_correo_electronico}
         placeholder="Confirmar correo electrónico"
-        onChange={e => setForm({ ...form, correo_electronico: e.target.value })}
+        onChange={e => setForm({ ...form, confirmar_correo_electronico: e.target.value })}
       />
       <InputNormal
         value={form.numero_celular}
         placeholder="Número de celular"
         onChange={e => setForm({ ...form, numero_celular: e.target.value })}
       />
-       <InputNormal
-        value={form.numero_celular}
+      <InputNormal
+        value={form.confirmar_numero_celular}
         placeholder="Confirmar número de celular"
-        onChange={e => setForm({ ...form, numero_celular: e.target.value })}
+        onChange={e => setForm({ ...form, confirmar_numero_celular: e.target.value })}
       />
       <InputNormal
         value={form.quien_diligencia}
@@ -137,12 +137,23 @@ const InfoForm: React.FC<InfoFormProps> = ({ persona }) => {
         placeholder="Área"
         onChange={e => setForm({ ...form, area: e.target.value })}
       />
-      <Button text = "Generar dirección" type='submit'/>
-      <Button text = "Actualizar" type='submit'/>
-      <Button text = "Guardar" type='submit'/>
-    </div>
+      <Button 
+        text="Generar dirección" 
+        type='submit'
+        className="h-10 mt-1 px-3 rounded-md"
+      />
+      <Button 
+        text="Actualizar" 
+        type='submit'
+        className="h-10 mt-1 px-3 rounded-md "
+      />
+      <Button 
+        text="Guardar" 
+        type='submit'
+        className="h-10 mt-1 px-3 rounded-md "
+      />
     </form>
-
+    </div>
   )
 };
 
