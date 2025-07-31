@@ -1,10 +1,10 @@
 // hooks/useIdentificationForm.ts
-import { getAllPersonas } from '../adapters/adapterObtenerPersonas';
+import { getByDocument } from '../adapters/getByDocument.adapter';
 
-export function useIdentificationForm() {
+export function useGetByDocument() {
   const fetchData = async (numeroDocumento: string) => {
     try {
-      const response = await getAllPersonas(numeroDocumento);
+      const response = await getByDocument(numeroDocumento);
       console.log('Respuesta cruda de la API:', response);
       if (Array.isArray(response.data)) {
         return response.data[0] || null;
