@@ -9,13 +9,15 @@ import { departamentoOptions } from '../models/departamentoOptions';
 import { municipioOptions } from '../models/municipioOptions';
 import { tipoEmpresaOptions } from '../models/tipoEmpresaOptions';
 import { useUpdatePersons } from '../../hooks/useUpdatePersons';
+import { useAlert } from '../../hooks/useAlert';
 
 interface InfoFormProps {
   persona: any;
 }
 
 const InfoForm: React.FC<InfoFormProps> = ({ persona }) => {
-  const { loading, error, success, updatePersonaData, clearMessages } = useUpdatePersons();
+  const { loading, updatePersonaData } = useUpdatePersons();
+  const { showWarning, showError } = useAlert();
   
   const [form, setForm] = useState({
     nombre_pais: '',
@@ -85,31 +87,37 @@ const InfoForm: React.FC<InfoFormProps> = ({ persona }) => {
     };
   };
 
-  // Manejar actualizar (solo actualizar, no crear)
-  const handleUpdate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    clearMessages();
-
-    if (!persona?.persona?.id) {
-      console.error('No hay persona para actualizar. Primero busca una persona.');
-      return;
-    }
-
-    // Validaciones básicas
+  // Función para validar el formulario con SweetAlert2
+  const validateForm = async (): Promise<boolean> => {
     if (!form.razon_social.trim()) {
-      console.error('La razón social es obligatoria');
-      return;
+      await showError("Campo requerido", "La razón social es obligatoria");
+      return false;
     }
 
     if (form.correo_electronico && form.correo_electronico !== form.confirmar_correo_electronico) {
-      console.error('Los correos electrónicos no coinciden');
-      return;
+      await showError("Correos no coinciden", "Los correos electrónicos no coinciden");
+      return false;
     }
 
     if (form.numero_celular && form.numero_celular !== form.confirmar_numero_celular) {
-      console.error('Los números de celular no coinciden');
+      await showError("Números no coinciden", "Los números de celular no coinciden");
+      return false;
+    }
+
+    return true;
+  };
+
+  // Manejar actualizar (solo actualizar, no crear)
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!persona?.persona?.id) {
+      await showWarning("No hay persona seleccionada", "Primero busca una persona usando el formulario de identificación");
       return;
     }
+
+    const isValid = await validateForm();
+    if (!isValid) return;
 
     try {
       const dataToSend = prepareDataForBackend();
@@ -119,6 +127,7 @@ const InfoForm: React.FC<InfoFormProps> = ({ persona }) => {
       await updatePersonaData(persona.persona.id, dataToSend);
     } catch (error) {
       console.error('Error en handleUpdate:', error);
+      // El error ya se maneja en el hook useUpdatePersons
     }
   };
 
@@ -230,26 +239,7 @@ const InfoForm: React.FC<InfoFormProps> = ({ persona }) => {
           />
         </div>
       </form>
-      <div className='mt-5'>
-          {error && (
-            <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-              {error}
-            </div>
-          )}
-          
-          {success && (
-            <div className="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
-              Persona actualizada exitosamente
-            </div>
-          )}
 
-          {/* Mostrar mensaje si no hay persona seleccionada */}
-          {!persona && (
-            <div className="mb-4 p-4 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
-              Primero busca una persona usando el formulario de identificación
-            </div>
-          )}
-      </div>
     </div>
   );
 };
