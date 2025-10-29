@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,9 +24,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-5flq13*_1+mr$tv4+!%4xd!#hu2%+8zonw*yjs#zxxuyzn)k8&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.vercel.app', 'now.sh', '127.0.0.1', 'localhost']
+
+# CORS settings
+CORS_ALLOW_ALL_ORIGINS = True  # Solo para desarrollo
+CORS_ALLOWED_ORIGINS = [
+    "https://prueba-tecnica-rafad8604.vercel.app",
+    "http://localhost:3000",
+]
 
 
 # Application definition
@@ -79,10 +87,10 @@ WSGI_APPLICATION = 'django_crud_api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres.qtwunubpplwyqdkzncri',
-        'PASSWORD': '7y7Od6DsYLN3ldra',
-        'HOST': 'aws-0-us-east-2.pooler.supabase.com',
+        'NAME': os.environ.get('POSTGRES_DATABASE', 'postgres'),
+        'USER': os.environ.get('POSTGRES_USER', 'postgres.qtwunubpplwyqdkzncri'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', '7y7Od6DsYLN3ldra'),
+        'HOST': os.environ.get('POSTGRES_HOST', 'aws-0-us-east-2.pooler.supabase.com'),
         'PORT': '5432',
     }
 }
@@ -122,7 +130,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -134,7 +144,8 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 # CORS settings
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "http://127.0.0.1:3000"
+    "http://127.0.0.1:3000",
+    "https://prueba-tecnica-rafad8604-brian-durans-projects.vercel.app/",
 ]
 
 CORS_ALLOW_CREDENTIALS = True

@@ -1,6 +1,6 @@
 //Cambiar nombre por otra palabra que no sea reservada
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
 
 const InputNormal: React.FC<InputProps> = (props) => {
   return (

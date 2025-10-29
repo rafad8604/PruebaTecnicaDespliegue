@@ -3,6 +3,7 @@ import React from 'react';
 import { useGetAllPersons } from '../../hooks/useGetAllPersons';
 import IdentificationForm from '../../module_info_user/components/IdentificationForm';
 import Title from '../../components/ui/Title';
+import { Persona } from '../../module_info_user/models/types';
 
 // Mapeo de IDs a nombres de tipos de documento
 const TIPOS_DOCUMENTO_MAP: {[key: number]: string} = {
@@ -16,25 +17,29 @@ export default function UserList() {
   const { personas, loading, error, searchByDocument, showAllPersonas, refetch } = useGetAllPersons();
   
   // Función que maneja la búsqueda desde IdentificationForm
-  const handleSubmit = async (data: any) => {
-    console.log('Datos recibidos del IdentificationForm:', data);
+  const handleSubmit = async (persona: Persona) => {
+    console.log('Datos recibidos del IdentificationForm:', persona);
     
     // Como IdentificationForm ya encontró la persona, 
     // pero nuestro hook maneja la búsqueda por documento,
     // necesitamos extraer el número de documento y buscar
-    if (data && data.numero_documento) {
-      await searchByDocument(data.numero_documento);
+    if (persona?.persona?.numero_documento) {
+      await searchByDocument(persona.persona.numero_documento);
     }
-  };
-  // Función para mostrar todas las personas
-  const handleShowAll = () => {
-    showAllPersonas();
   };
 
   // Función para obtener el nombre del tipo de documento
-  const getTipoDocumentoNombre = (tipoDocumentoId: number) => {
-    return TIPOS_DOCUMENTO_MAP[tipoDocumentoId] || 'Desconocido';
+  const getTipoDocumentoNombre = (tipoDocumentoId: number | undefined) => {
+    if (typeof tipoDocumentoId === 'number') {
+      return TIPOS_DOCUMENTO_MAP[tipoDocumentoId] || 'Desconocido';
+    }
+    return 'Desconocido';
   };
+
+  // Cargar todos los usuarios al montar el componente
+  React.useEffect(() => {
+    showAllPersonas();
+  }, [showAllPersonas]);
 
   if (loading) {
     return (

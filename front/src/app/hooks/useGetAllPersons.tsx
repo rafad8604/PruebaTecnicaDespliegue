@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getAllPersonas } from '../adapters/getAllPersons.adapter';
+import { getAllPersons } from '../adapters/getAllPersons.adapter';
 import { getByDocument } from '../adapters/getByDocument.adapter';
 
 interface Persona {
@@ -34,7 +34,7 @@ export function useGetAllPersons() {
     setLoading(true);
     setError(null);
     try {
-      const response = await getAllPersonas(); // ¡Corregido! Era getAllPersonasComplete()
+      const response = await getAllPersons();
       console.log('Todas las personas:', response.data);
       setPersonas(response.data);
       setPersonasOriginales(response.data); // Guardamos copia original para filtros
