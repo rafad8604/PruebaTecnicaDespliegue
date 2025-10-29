@@ -8,6 +8,7 @@ import { tipoPersonaOptions } from '../models/tipoPersonaOptions';
 import { tipoDocumentoOptions } from '../models/tipoDocumentoOptions';
 import { useGetByDocument } from '../../hooks/useGetByDocument';
 import { useGetAllPersons } from '../../hooks/useGetAllPersons';
+import { useAlert } from '../../hooks/useAlert';
 
 
 interface IdentificationFormProps {
@@ -21,6 +22,7 @@ const IdentificationForm: React.FC<IdentificationFormProps> = ({ onFound }) => {
   const [error, setError] = useState('');
   const { personas, loading, error: hookError, searchByDocument, showAllPersonas, refetch } = useGetAllPersons();
   const { fetchData } = useGetByDocument();
+  const { showError, showWarning, showSuccess } = useAlert();
 
   // Filtrar opciones de documento según el tipo de persona
   const filteredDocumentOptions = useMemo(() => {
@@ -70,32 +72,44 @@ const IdentificationForm: React.FC<IdentificationFormProps> = ({ onFound }) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
+    
     if (!tipoPersona || !tipoDocumento) {
-      setError('Debes seleccionar tipo de persona y tipo de documento antes de buscar.');
+      await showWarning("Campos requeridos", "Debes seleccionar tipo de persona y tipo de documento antes de buscar.");
       return;
     }
+    
     if(tipoPersona === 'NATURAL' && tipoDocumento === 'NIT') {
-      setError('No puedes buscar una persona natural con NIT.');
+      await showError("Combinación inválida", "No puedes buscar una persona natural con NIT.");
       return;
     }
+    
     if (tipoPersona === 'JURIDICA' && tipoDocumento === 'CC') {
-      setError('No puedes buscar una persona jurídica con Cédula de Ciudadanía.');
+      await showError("Combinación inválida", "No puedes buscar una persona jurídica con Cédula de Ciudadanía.");
       return;
     }
 
     if (tipoPersona === 'JURIDICA' && (tipoDocumento === 'CE' || tipoDocumento === 'PA')) {
-      setError('Una persona jurídica solo puede tener NIT.');
+      await showError("Combinación inválida", "Una persona jurídica solo puede tener NIT.");
       return;
     }
+    
     if (!numeroDocumento) {
-      setError('Debes ingresar el número de documento.');
+      await showWarning("Campo requerido", "Debes ingresar el número de documento.");
       return;
     }
-    const data = await fetchData(numeroDocumento);
-    console.log(data);
-    // fetchData podría no retornar nada, así que solo llama onFound si data no es undefined/null
-    if (data !== undefined && data !== null) {
-      onFound(data);
+    
+    try {
+      const data = await fetchData(numeroDocumento);
+      console.log(data);
+      
+      if (data !== undefined && data !== null) {
+        await showSuccess("¡Persona encontrada!", "Los datos se han cargado correctamente");
+        onFound(data);
+      } else {
+        await showWarning("No encontrado", "No se encontró ninguna persona con ese número de documento");
+      }
+    } catch (error) {
+      await showError("Error de búsqueda", "Ocurrió un error al buscar la persona. Intenta nuevamente.");
     }
   };
 
@@ -131,7 +145,7 @@ const IdentificationForm: React.FC<IdentificationFormProps> = ({ onFound }) => {
               className="rounded-full px-20 py-2 text-lg hover:bg-orange-500 transition-colors shadow-lg"
             />
           </div>
-          {error && <div className="col-span-3 text-red-500 mt-2 text-right">{error}</div>}
+
         </form>
       </div>
     </div>
