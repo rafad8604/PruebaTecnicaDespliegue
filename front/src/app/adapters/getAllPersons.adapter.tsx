@@ -1,5 +1,6 @@
 import axios from 'axios';
+import config from '../config';
 
-export const getAllPersonas = async () => {
-  return axios.get(`http://127.0.0.1:8000/api/personas/`);
+export const getAllPersons = async () => {
+  return axios.get(`${config.apiUrl}/api/personas/`);
 };

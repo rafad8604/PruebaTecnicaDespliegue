@@ -11,12 +11,14 @@ import { tipoEmpresaOptions } from '../models/tipoEmpresaOptions';
 import { useUpdatePersons } from '../../hooks/useUpdatePersons';
 import { useAlert } from '../../hooks/useAlert';
 
+import { Persona } from '../models/types';
+
 interface InfoFormProps {
-  persona: any;
+  persona: Persona;
 }
 
 const InfoForm: React.FC<InfoFormProps> = ({ persona }) => {
-  const { loading, updatePersonaData } = useUpdatePersons();
+  const { updatePersonaData, loading } = useUpdatePersons();
   const { showWarning, showError } = useAlert();
   
   const [form, setForm] = useState({
@@ -44,7 +46,7 @@ const InfoForm: React.FC<InfoFormProps> = ({ persona }) => {
       const rawDepartamento = persona.departamento?.nombre_departamento ?? '';
       const rawMunicipio = persona.municipio?.nombre_municipio ?? '';
       
-      setForm(prev => ({
+      setForm({
         nombre_pais: String(rawPais).trim(),
         nombre_departamento: String(rawDepartamento).trim(),
         nombre_municipio: String(rawMunicipio).trim(),
@@ -59,8 +61,8 @@ const InfoForm: React.FC<InfoFormProps> = ({ persona }) => {
         confirmar_numero_celular: persona.persona?.numero_celular ?? '',
         quien_diligencia: persona.persona?.quien_diligencia ?? '',
         cargo: persona.persona?.cargo ?? '',
-        area: persona.persona?.area ?? '',
-      }));
+        area: persona.persona?.area ?? ''
+      });
     }
   }, [persona]);
 

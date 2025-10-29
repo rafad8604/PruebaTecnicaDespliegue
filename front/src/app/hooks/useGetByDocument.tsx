@@ -10,7 +10,7 @@ export function useGetByDocument() {
         return response.data[0] || null;
       }
       return response.data;
-    } catch (error) {
+    } catch {
       return null;
     }
   };

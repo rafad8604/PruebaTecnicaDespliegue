@@ -5,22 +5,18 @@ import InputNormal from '../../components/ui/InputNormal';
 import Button from '../../components/ui/Button';
 import InputSelect from '../../components/ui/InputSelect';
 import { tipoPersonaOptions } from '../models/tipoPersonaOptions';
-import { tipoDocumentoOptions } from '../models/tipoDocumentoOptions';
 import { useGetByDocument } from '../../hooks/useGetByDocument';
-import { useGetAllPersons } from '../../hooks/useGetAllPersons';
 import { useAlert } from '../../hooks/useAlert';
-
+import { Persona } from '../models/types';
 
 interface IdentificationFormProps {
-  onFound: (persona: any) => void;
+  onFound: (persona: Persona) => void;
 }
 
 const IdentificationForm: React.FC<IdentificationFormProps> = ({ onFound }) => {
   const [tipoPersona, setTipoPersona] = useState('');
   const [tipoDocumento, setTipoDocumento] = useState('');
   const [numeroDocumento, setNumeroDocumento] = useState('');
-  const [error, setError] = useState('');
-  const { personas, loading, error: hookError, searchByDocument, showAllPersonas, refetch } = useGetAllPersons();
   const { fetchData } = useGetByDocument();
   const { showError, showWarning, showSuccess } = useAlert();
 
@@ -57,21 +53,16 @@ const IdentificationForm: React.FC<IdentificationFormProps> = ({ onFound }) => {
     // Resetear tipo de documento cuando cambie tipo de persona
     setTipoDocumento('');
     
-    // Limpiar errores
-    setError('');
-    
     console.log('Tipo de persona cambiado a:', newTipoPersona);
   };
 
   // Manejar cambio de tipo de documento
   const handleTipoDocumentoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setTipoDocumento(e.target.value);
-    setError('');
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError('');
     
     if (!tipoPersona || !tipoDocumento) {
       await showWarning("Campos requeridos", "Debes seleccionar tipo de persona y tipo de documento antes de buscar.");
@@ -108,7 +99,7 @@ const IdentificationForm: React.FC<IdentificationFormProps> = ({ onFound }) => {
       } else {
         await showWarning("No encontrado", "No se encontró ninguna persona con ese número de documento");
       }
-    } catch (error) {
+    } catch {
       await showError("Error de búsqueda", "Ocurrió un error al buscar la persona. Intenta nuevamente.");
     }
   };
