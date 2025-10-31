@@ -101,8 +101,9 @@ except Exception:
     dj_database_url = None
 
 if DATABASE_URL and dj_database_url:
+    # Use DATABASE_URL with SSL required (Supabase requires SSL)
     DATABASES = {
-        "default": dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
+        "default": dj_database_url.config(default=DATABASE_URL, conn_max_age=600, ssl_require=True)
     }
 else:
     DATABASES = {
@@ -112,7 +113,9 @@ else:
             "USER": os.environ.get("POSTGRES_USER", "postgres"),
             "PASSWORD": os.environ.get("POSTGRES_PASSWORD", ""),
             "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
+            # If you're using Supabase Connection Pooling, set POSTGRES_PORT=6543
             "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+            "OPTIONS": {"sslmode": os.environ.get("DB_SSLMODE", "require")},
         }
     }
 
