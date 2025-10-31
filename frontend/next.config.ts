@@ -1,19 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  async rewrites() {
-    const apiBase = process.env.NEXT_PUBLIC_API_URL;
-    // If an API base is provided, proxy /api/* to that backend to avoid CORS
-    if (apiBase) {
-      return [
-        {
-          source: "/api/:path*",
-          destination: `${apiBase}/:path*`,
-        },
-      ];
-    }
-    return [];
-  },
+  // Rewrites to external URLs (HTTPS) are not supported in Next.js
+  // The frontend will call the backend directly via CORS
+  // CORS is already configured in Django settings with ALLOWED_HOSTS
 };
 
 export default nextConfig;
