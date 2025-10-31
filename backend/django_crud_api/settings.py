@@ -36,10 +36,16 @@ FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
 # In development it may be convenient to allow all origins. In production,
 # set DEBUG=False and provide FRONTEND_URL to restrict CORS.
 CORS_ALLOW_ALL_ORIGINS = DEBUG
-CORS_ALLOWED_ORIGINS = [
-    FRONTEND_URL,
-    "http://localhost:3000",
-]
+
+# Build CORS_ALLOWED_ORIGINS from FRONTEND_URL and ALLOWED_HOSTS
+cors_origins = [FRONTEND_URL, "http://localhost:3000", "http://127.0.0.1:3000"]
+
+# Add all allowed hosts as https:// origins for CORS
+for host in ALLOWED_HOSTS:
+    if host and host not in ["localhost", "127.0.0.1"]:
+        cors_origins.append(f"https://{host}")
+
+CORS_ALLOWED_ORIGINS = list(set(cors_origins))  # Remove duplicates
 
 
 # Application definition
