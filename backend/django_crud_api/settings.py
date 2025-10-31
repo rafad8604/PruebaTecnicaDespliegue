@@ -57,8 +57,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # Must be at the top
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # High priority; before CommonMiddleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -184,5 +185,6 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True  # Only for development
-CORS_ALLOW_ALL_ORIGINS = True  # Only for development
+# Remove overly-permissive defaults at the bottom. We already set
+# CORS_ALLOW_ALL_ORIGINS earlier based on DEBUG and provided explicit
+# CORS_ALLOWED_ORIGINS with FRONTEND_URL.

@@ -2,6 +2,7 @@ Django>=4.0
 gunicorn
 whitenoise
 django-cors-headers
+djangorestframework
 psycopg2-binary   # si usarás Postgres
 dj-database-url   # para DATABASE_URL parsing optional
 python-dotenv     # opcional para .env local
