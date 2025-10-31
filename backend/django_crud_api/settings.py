@@ -21,17 +21,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-5flq13*_1+mr$tv4+!%4xd!#hu2%+8zonw*yjs#zxxuyzn)k8&'
+# Read sensitive settings from environment variables for production
+SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-local-dev-key-change-me")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ['.vercel.app', 'now.sh', '127.0.0.1', 'localhost']
+# Allowed hosts can be provided as a comma-separated env var
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
-# CORS settings
-CORS_ALLOW_ALL_ORIGINS = True  # Solo para desarrollo
+# CORS settings - prefer explicit FRONTEND_URL in production
+FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
+
+# In development it may be convenient to allow all origins. In production,
+# set DEBUG=False and provide FRONTEND_URL to restrict CORS.
+CORS_ALLOW_ALL_ORIGINS = DEBUG
 CORS_ALLOWED_ORIGINS = [
-    "https://prueba-tecnica-rafad8604.vercel.app",
+    FRONTEND_URL,
     "http://localhost:3000",
 ]
 
@@ -82,18 +88,32 @@ WSGI_APPLICATION = 'django_crud_api.wsgi.application'
 
 
 # Database
+# Prefer DATABASE_URL (useful for Supabase). If dj-database-url is available
+# it will be used to parse DATABASE_URL. Otherwise fallback to individual
+# POSTGRES_* env variables.
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DATABASE', 'postgres'),
-        'USER': os.environ.get('POSTGRES_USER', 'postgres.qtwunubpplwyqdkzncri'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', '7y7Od6DsYLN3ldra'),
-        'HOST': os.environ.get('POSTGRES_HOST', 'aws-0-us-east-2.pooler.supabase.com'),
-        'PORT': '5432',
+DATABASE_URL = os.environ.get("DATABASE_URL")
+try:
+    import dj_database_url
+except Exception:
+    dj_database_url = None
+
+if DATABASE_URL and dj_database_url:
+    DATABASES = {
+        "default": dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ.get("POSTGRES_DATABASE", "postgres"),
+            "USER": os.environ.get("POSTGRES_USER", "postgres"),
+            "PASSWORD": os.environ.get("POSTGRES_PASSWORD", ""),
+            "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
+            "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+        }
+    }
 
 
 # Password validation
@@ -139,15 +159,8 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-
-# CORS settings
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "https://prueba-tecnica-rafad8604-brian-durans-projects.vercel.app",
-]
-
+# CORS extras: keep credential and allowed methods/headers settings. The
+# allowed origins list is defined earlier and depends on FRONTEND_URL / DEBUG.
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_METHODS = [
