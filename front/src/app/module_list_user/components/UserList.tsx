@@ -32,24 +32,36 @@ export default function UserList() {
   };
 
   // Función para manejar la edición
-  const handleEdit = (numeroDocumento: string) => {
-    // Guardamos el número de documento en sessionStorage para que module_info_user lo use
-    sessionStorage.setItem('editPersonDocument', numeroDocumento);
-    // Redirigimos al módulo de información de usuario
-    router.push('/module_info_user');
-  };
+  const handleEdit = React.useCallback((numeroDocumento: string) => {
+    console.log('handleEdit llamado con documento:', numeroDocumento);
+    try {
+      // Guardamos el número de documento en sessionStorage para que module_info_user lo use
+      sessionStorage.setItem('editPersonDocument', numeroDocumento);
+      console.log('Documento guardado en sessionStorage');
+      // Redirigimos al módulo de información de usuario
+      router.push('/module_info_user');
+    } catch (error) {
+      console.error('Error en handleEdit:', error);
+    }
+  }, [router]);
 
   // Función para manejar la eliminación
-  const handleDelete = async (id: number, numeroDocumento: string) => {
-    // Confirmación antes de eliminar
-    const confirmDelete = window.confirm(
-      `¿Está seguro que desea eliminar a la persona con documento ${numeroDocumento}?`
-    );
-    
-    if (!confirmDelete) return;
-
+  const handleDelete = React.useCallback(async (id: number, numeroDocumento: string) => {
+    console.log('handleDelete llamado con id:', id, 'documento:', numeroDocumento);
     try {
+      // Confirmación antes de eliminar
+      const confirmDelete = window.confirm(
+        `¿Está seguro que desea eliminar a la persona con documento ${numeroDocumento}?`
+      );
+      
+      if (!confirmDelete) {
+        console.log('Usuario canceló la eliminación');
+        return;
+      }
+
+      console.log('Intentando eliminar persona...');
       await deletePerson(id);
+      console.log('Persona eliminada exitosamente');
       // Mostrar mensaje de éxito
       alert('Persona eliminada exitosamente');
       // Recargar la lista
@@ -58,7 +70,7 @@ export default function UserList() {
       console.error('Error al eliminar persona:', error);
       alert('Error al eliminar la persona. Por favor, intente nuevamente.');
     }
-  };
+  }, [refetch]);
 
   // Función para obtener el nombre del tipo de documento
   const getTipoDocumentoNombre = (tipoDocumentoId: number | undefined) => {
@@ -189,13 +201,25 @@ export default function UserList() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button 
-                      onClick={() => handleEdit(persona.numero_documento)}
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Botón Editar clickeado');
+                        handleEdit(persona.numero_documento);
+                      }}
                       className="text-green-600 hover:text-green-900 mr-4 cursor-pointer"
                     >
                       Editar
                     </button>
                     <button 
-                      onClick={() => handleDelete(persona.id, persona.numero_documento)}
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Botón Eliminar clickeado');
+                        handleDelete(persona.id, persona.numero_documento);
+                      }}
                       className="text-red-600 hover:text-red-900 cursor-pointer"
                     >
                       Eliminar
