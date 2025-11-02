@@ -1,9 +1,11 @@
 'use client';
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { useGetAllPersons } from '../../hooks/useGetAllPersons';
 import IdentificationForm from '../../module_info_user/components/IdentificationForm';
 import Title from '../../components/ui/Title';
 import { Persona } from '../../module_info_user/models/types';
+import { deletePerson } from '../../adapters/deletePerson.adapter';
 
 // Mapeo de IDs a nombres de tipos de documento
 const TIPOS_DOCUMENTO_MAP: {[key: number]: string} = {
@@ -15,6 +17,11 @@ const TIPOS_DOCUMENTO_MAP: {[key: number]: string} = {
 
 export default function UserList() {
   const { personas, loading, error, searchByDocument, showAllPersonas, refetch } = useGetAllPersons();
+  const router = useRouter();
+  
+  // Log para verificar que el componente se renderiza
+  console.log('UserList renderizado, personas:', personas?.length || 0);
+  console.log('Loading:', loading, 'Error:', error);
   
   // Función que maneja la búsqueda desde IdentificationForm
   const handleSubmit = async (persona: Persona) => {
@@ -28,6 +35,47 @@ export default function UserList() {
     }
   };
 
+  // Función para manejar la edición
+  const handleEdit = React.useCallback((numeroDocumento: string) => {
+    console.log('handleEdit llamado con documento:', numeroDocumento);
+    try {
+      // Guardamos el número de documento en sessionStorage para que module_info_user lo use
+      sessionStorage.setItem('editPersonDocument', numeroDocumento);
+      console.log('Documento guardado en sessionStorage');
+      // Redirigimos al módulo de información de usuario
+      router.push('/module_info_user');
+    } catch (error) {
+      console.error('Error en handleEdit:', error);
+    }
+  }, [router]);
+
+  // Función para manejar la eliminación
+  const handleDelete = React.useCallback(async (id: number, numeroDocumento: string) => {
+    console.log('handleDelete llamado con id:', id, 'documento:', numeroDocumento);
+    try {
+      // Confirmación antes de eliminar
+      const confirmDelete = window.confirm(
+        `¿Está seguro que desea eliminar a la persona con documento ${numeroDocumento}?`
+      );
+      
+      if (!confirmDelete) {
+        console.log('Usuario canceló la eliminación');
+        return;
+      }
+
+      console.log('Intentando eliminar persona...');
+      await deletePerson(id);
+      console.log('Persona eliminada exitosamente');
+      // Mostrar mensaje de éxito
+      alert('Persona eliminada exitosamente');
+      // Recargar la lista
+      refetch();
+    } catch (error) {
+      console.error('Error al eliminar persona:', error);
+      alert('Error al eliminar la persona. Por favor, intente nuevamente.');
+    }
+  }, [refetch]);
+
   // Función para obtener el nombre del tipo de documento
   const getTipoDocumentoNombre = (tipoDocumentoId: number | undefined) => {
     if (typeof tipoDocumentoId === 'number') {
@@ -38,8 +86,10 @@ export default function UserList() {
 
   // Cargar todos los usuarios al montar el componente
   React.useEffect(() => {
+    console.log('useEffect ejecutado');
     showAllPersonas();
-  }, [showAllPersonas]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (loading) {
     return (
@@ -70,12 +120,24 @@ export default function UserList() {
       </div>
       <div className="mb-6 flex justify-between items-center mt-10 ml-10 mr-10">
         <Title title="Registro de recaudadores pre - identificados" className="flex flex-row basis-128" />
-        <button 
-          onClick={refetch}
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer"
-        >
-          Actualizar
-        </button>
+        <div className="flex gap-2">
+          <button 
+            type="button"
+            onClick={() => {
+              console.log('TEST: Botón de prueba clickeado!');
+              alert('¡El botón funciona!');
+            }}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer"
+          >
+            Test Click
+          </button>
+          <button 
+            onClick={refetch}
+            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer"
+          >
+            Actualizar
+          </button>
+        </div>
       </div>
 
       {personas.length === 0 ? (
@@ -156,13 +218,28 @@ export default function UserList() {
                     {persona.numero_celular || 'N/A'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button className="text-indigo-600 hover:text-indigo-900 mr-4">
-                      Ver
-                    </button>
-                    <button className="text-green-600 hover:text-green-900 mr-4">
+                    <button 
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Botón Editar clickeado');
+                        handleEdit(persona.numero_documento);
+                      }}
+                      className="text-green-600 hover:text-green-900 mr-4 cursor-pointer"
+                    >
                       Editar
                     </button>
-                    <button className="text-red-600 hover:text-red-900">
+                    <button 
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Botón Eliminar clickeado');
+                        handleDelete(persona.id, persona.numero_documento);
+                      }}
+                      className="text-red-600 hover:text-red-900 cursor-pointer"
+                    >
                       Eliminar
                     </button>
                   </td>

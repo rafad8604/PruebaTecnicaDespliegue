@@ -1,3 +1,4 @@
+'use client';
 import Layout from '../components/ui/Layout';
 import UserList from './components/UserList';
 

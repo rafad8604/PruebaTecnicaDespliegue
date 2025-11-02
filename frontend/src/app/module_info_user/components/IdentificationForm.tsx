@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Title from '../../components/ui/Title';
 import InputNormal from '../../components/ui/InputNormal';
 import Button from '../../components/ui/Button';
@@ -11,14 +11,55 @@ import { Persona } from '../models/types';
 
 interface IdentificationFormProps {
   onFound: (persona: Persona) => void;
+  initialDocument?: string | null;
 }
 
-const IdentificationForm: React.FC<IdentificationFormProps> = ({ onFound }) => {
+const IdentificationForm: React.FC<IdentificationFormProps> = ({ onFound, initialDocument }) => {
   const [tipoPersona, setTipoPersona] = useState('');
   const [tipoDocumento, setTipoDocumento] = useState('');
   const [numeroDocumento, setNumeroDocumento] = useState('');
   const { fetchData } = useGetByDocument();
   const { showError, showWarning, showSuccess } = useAlert();
+
+  // Buscar automáticamente si hay un initialDocument
+  useEffect(() => {
+    if (initialDocument) {
+      setNumeroDocumento(initialDocument);
+      // Buscar automáticamente la persona
+      const autoSearch = async () => {
+        try {
+          const data = await fetchData(initialDocument);
+          console.log('Persona cargada para edición:', data);
+          
+          if (data !== undefined && data !== null) {
+            // Establecer los valores del formulario basándose en los datos encontrados
+            if (data.persona) {
+              const persona = data.persona;
+              // Determinar tipo de persona basándose en el tipo de documento
+              if (persona.tipo_de_documento === 3) { // NIT
+                setTipoPersona('JURIDICA');
+                setTipoDocumento('NIT');
+              } else {
+                setTipoPersona('NATURAL');
+                // Mapear el ID del tipo de documento a su código
+                const tipoDocMap: { [key: number]: string } = {
+                  1: 'CC',
+                  2: 'CE',
+                  4: 'PA'
+                };
+                setTipoDocumento(tipoDocMap[persona.tipo_de_documento] || '');
+              }
+            }
+            await showSuccess("¡Persona encontrada!", "Los datos se han cargado para edición");
+            onFound(data);
+          }
+        } catch {
+          await showError("Error de búsqueda", "No se pudo cargar la persona para edición.");
+        }
+      };
+      autoSearch();
+    }
+  }, [initialDocument]);
 
   // Filtrar opciones de documento según el tipo de persona
   const filteredDocumentOptions = useMemo(() => {
