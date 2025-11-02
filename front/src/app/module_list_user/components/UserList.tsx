@@ -20,7 +20,8 @@ export default function UserList() {
   const router = useRouter();
   
   // Log para verificar que el componente se renderiza
-  console.log('UserList renderizado, personas:', personas.length);
+  console.log('UserList renderizado, personas:', personas?.length || 0);
+  console.log('Loading:', loading, 'Error:', error);
   
   // Función que maneja la búsqueda desde IdentificationForm
   const handleSubmit = async (persona: Persona) => {
@@ -85,8 +86,10 @@ export default function UserList() {
 
   // Cargar todos los usuarios al montar el componente
   React.useEffect(() => {
+    console.log('useEffect ejecutado');
     showAllPersonas();
-  }, [showAllPersonas]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (loading) {
     return (
