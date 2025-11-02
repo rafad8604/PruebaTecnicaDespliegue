@@ -1,18 +1,6 @@
 {
-  "builds": [
-    {
-      "src": "django_crud_api/wsgi.py",
-      "use": "@vercel/python"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "django_crud_api/wsgi.py"
-    }
-  ]
+  "buildCommand": "cd front && npm install && npm run build",
+  "outputDirectory": "front/.next",
+  "framework": "nextjs",
+  "installCommand": "cd front && npm install"
 }
