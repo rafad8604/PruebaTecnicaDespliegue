@@ -19,6 +19,9 @@ export default function UserList() {
   const { personas, loading, error, searchByDocument, showAllPersonas, refetch } = useGetAllPersons();
   const router = useRouter();
   
+  // Log para verificar que el componente se renderiza
+  console.log('UserList renderizado, personas:', personas.length);
+  
   // Función que maneja la búsqueda desde IdentificationForm
   const handleSubmit = async (persona: Persona) => {
     console.log('Datos recibidos del IdentificationForm:', persona);
@@ -114,12 +117,24 @@ export default function UserList() {
       </div>
       <div className="mb-6 flex justify-between items-center mt-10 ml-10 mr-10">
         <Title title="Registro de recaudadores pre - identificados" className="flex flex-row basis-128" />
-        <button 
-          onClick={refetch}
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer"
-        >
-          Actualizar
-        </button>
+        <div className="flex gap-2">
+          <button 
+            type="button"
+            onClick={() => {
+              console.log('TEST: Botón de prueba clickeado!');
+              alert('¡El botón funciona!');
+            }}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer"
+          >
+            Test Click
+          </button>
+          <button 
+            onClick={refetch}
+            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer"
+          >
+            Actualizar
+          </button>
+        </div>
       </div>
 
       {personas.length === 0 ? (
